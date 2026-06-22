@@ -1,0 +1,98 @@
+{
+  "name": "flowgate-automation",
+  "version": "1.0.0",
+  "description": "Production-grade n8n + Docker pipeline for resilient user data synchronization (ETL with retry, batching and observability)",
+  "keywords": [
+    "n8n",
+    "docker",
+    "typescript",
+    "etl",
+    "api-integration",
+    "automation",
+    "sre",
+    "observability",
+    "resilience",
+    "clean-code",
+    "solid",
+    "devops"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Lucas Daniel",
+    "url": "https://github.com/lucasdaniel2201"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs && tsc --emitDeclarationOnly --outDir dist",
+    "build:tsc": "tsc --declaration --outDir dist",
+    "build:bundle": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsc --declaration --outDir dist --watch",
+    "cli": "tsx src/cli/processOrders.cli.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts --max-warnings 0",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts *.md *.json",
+    "format:check": "prettier --check src/**/*.ts *.md *.json",
+    "test": "node --import tsx --test src/__tests__/**/*.test.ts",
+    "test:watch": "node --import tsx --test --watch src/__tests__/**/*.test.ts",
+    "test:coverage": "node --import tsx --experimental-test-coverage --test src/__tests__/**/*.test.ts",
+    "test:vitest": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "check": "npm run lint && npx tsc --noEmit && npm run test && npm run build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitest/coverage-v8": "^1.2.0",
+    "esbuild": "^0.28.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.2.0",
+    "nock": "^13.5.0",
+    "pino-pretty": "^11.0.0",
+    "prettier": "^3.2.0",
+    "testcontainers": "^10.7.0",
+    "tsup": "^8.0.0",
+    "tsx": "^4.7.0",
+    "typescript": "~5.5.0",
+    "vitest": "^1.2.0"
+  },
+  "dependencies": {
+    "pino": "^8.17.0",
+    "zod": "^3.22.0"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{md,json,yaml,yml}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

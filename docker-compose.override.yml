@@ -1,0 +1,28 @@
+# Docker Compose Override — Development
+#
+# Adds development-friendly settings:
+#  - Lower resource limits
+#  - Debug port exposed
+#  - Faster restart policy
+#
+# Usage: docker compose -f docker-compose.yml -f docker-compose.override.yml up
+
+version: '3.8'
+
+services:
+  n8n:
+    environment:
+      - N8N_LOG_LEVEL=debug
+      - NODE_ENV=development
+    restart: on-failure # restart quickly in dev, don't persist across reboots
+    ports:
+      - '${N8N_PORT:-5678}:5678'
+      - '9229:9229' # Node.js debugger
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M

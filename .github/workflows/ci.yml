@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # =========================================================================
+  # Quality Gate: lint → typecheck → test → build
+  # =========================================================================
+  quality:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: TypeCheck (tsc)
+        run: npm run typecheck
+
+      - name: Test (Vitest + Coverage)
+        run: npm run test:coverage
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage/
+
+  # =========================================================================
+  # Docker: validate Dockerfile and docker-compose
+  # =========================================================================
+  docker:
+    name: Docker Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Lint Dockerfile (hadolint)
+        uses: hadolint/hadolint-action@v3
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: warning
+
+      - name: Build Docker image
+        run: docker build -t flowgate:ci .
+
+      - name: Validate Docker Compose
+        run: docker compose -f docker-compose.yml config
+
+      - name: Run container smoke test
+        run: |
+          docker run --rm flowgate:ci node dist/cli/processOrders.cli.js
+          echo "Container runs successfully"
+
+  # =========================================================================
+  # n8n: validate workflow JSON
+  # =========================================================================
+  n8n-validate:
+    name: n8n Workflow Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JSON syntax
+        run: |
+          node -e "
+            const fs = require('fs');
+            const workflow = JSON.parse(fs.readFileSync('workflows/workflow_boavista.json', 'utf-8'));
+            console.log('Workflow name:', workflow.name);
+            console.log('Nodes:', workflow.nodes.length);
+            console.log('Connections:', Object.keys(workflow.connections).length);
+            assert(workflow.nodes.length >= 6, 'Expected at least 6 nodes');
+            assert(workflow.connections, 'Workflow must have connections');
+            console.log('Workflow JSON is valid.');
+            function assert(condition, message) {
+              if (!condition) throw new Error(message);
+            }
+          "
