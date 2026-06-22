@@ -81,7 +81,7 @@
   },
   "dependencies": {
     "pino": "^8.17.0",
-    "zod": "^3.22.0"
+    "zod": "^4.4.3"
   },
   "lint-staged": {
     "src/**/*.ts": [
