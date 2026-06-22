@@ -276,7 +276,7 @@ penso em trade-offs arquiteturais. É o tipo de coisa que separa pleno de sênio
 **Lucas Daniel** — SRE / Platform Engineer
 
 - 🐙 GitHub: [@lucasdaniel2201](https://github.com/lucasdaniel2201)
-- 💼 LinkedIn: [linkedin.com/in/seu-perfil](https://linkedin.com/in/seu-perfil)
+- 💼 LinkedIn: [linkedin](https://www.linkedin.com/in/lucas-santos-a620011b9?utm_source=share_via&utm_content=profile&utm_medium=member_ios)
 
 ---
 
