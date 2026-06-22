@@ -1,22 +1,11 @@
-# Dependencies
+# Node
 node_modules/
-.pnp
-.pnp.js
 
-# Build output
-dist/
-build/
-.tsbuildinfo
+# Environment
+.env
+.env.*
 
-# Tests
-coverage/
-.nyc_output/
-__tests__/
-*.test.ts
-*.spec.ts
-**/fixtures/
-
-# CI & Git
+# Git & CI
 .git/
 .github/
 .husky/
@@ -24,30 +13,7 @@ __tests__/
 # IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
-
-# Environment
-.env
-.env.*
-!.env.example
-
-# Logs
-logs/
-*.log
-npm-debug.log*
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Documentation (not needed in container)
-docs/
-*.md
-!README.md
-
-# Node
-.npm
-.nvmrc
-.node-version

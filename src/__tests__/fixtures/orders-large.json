@@ -1,8 +1,0 @@
-[
-  { "id": "P001", "quantity": 3, "unitPrice": 100.0, "discount": 0.1 },
-  { "id": "P002", "quantity": 1, "unitPrice": 250.0, "discount": 0.0 },
-  { "id": "P003", "quantity": 2, "unitPrice": 80.0, "discount": 0.05 },
-  { "id": "P004", "quantity": 5, "unitPrice": 45.0, "discount": 0.15 },
-  { "id": "P005", "quantity": 10, "unitPrice": 12.5, "discount": 0.0 },
-  { "id": "P006", "quantity": 1, "unitPrice": 999.99, "discount": 0.5 }
-]
