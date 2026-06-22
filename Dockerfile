@@ -1,7 +1,7 @@
 # Flowgate Automation — Dockerfile
 # Imagem minimal para disponibilizar o Makefile e scripts de utilidade.
 
-FROM alpine:3.20
+FROM alpine:3.24
 
 LABEL org.opencontainers.image.title="Flowgate Automation"
 LABEL org.opencontainers.image.description="Pipeline ETL de usuários com n8n + Docker"
