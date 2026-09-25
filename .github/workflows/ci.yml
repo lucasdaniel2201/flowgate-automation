@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    name: Testes estáticos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # Valida o workflow JSON, o docker-compose e o .env.example. Não precisa
+      # de rede nem de container rodando.
+      # O glob vai entre aspas de propósito: quem expande é o próprio Node, não
+      # o shell, então vale igual no bash e no PowerShell.
+      - name: Rodar a suíte de testes
+        run: node --test "tests/**/*.test.mjs"
+
+  smoke-test:
+    name: Smoke test ponta a ponta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Criar .env a partir do template
+        run: cp .env.example .env
+
+      - name: Subir os serviços
+        run: docker compose up -d
+
+      - name: Aguardar o healthcheck
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:5678/healthz > /dev/null 2>&1; then
+              echo "n8n respondeu ao healthcheck na tentativa ${i}."
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Timeout esperando o n8n ficar saudável."
+          exit 1
+
+      # Importa o workflow, ativa, dispara o webhook e confere o sumário.
+      - name: Smoke test
+        run: bash scripts/smoke-test.sh
+
+      - name: Logs do container em caso de falha
+        if: failure()
+        run: docker compose logs --tail=200

@@ -1,0 +1,122 @@
+{
+  "id": "flowgate-user-sync",
+  "name": "Flowgate Automation - User Sync Pipeline",
+  "description": "ETL pipeline: fetch users from an external API, filter by email domain (.net/.org), transform to the CRM schema, and POST to a webhook with retry + batching.",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "iniciar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [2400, 352],
+      "id": "webhook-trigger",
+      "name": "Webhook (Trigger)",
+      "webhookId": "a1f3c2d4-5b6e-4f7a-9c8d-1e2f3a4b5c6d",
+      "notes": "Triggers the pipeline. Call: POST /webhook/iniciar"
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.USERS_API_URL ?? 'https://jsonplaceholder.typicode.com/users' }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2608, 352],
+      "id": "fetch-users",
+      "name": "Buscar Usuários (GET)",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "notes": "Fetches user list from external API. Retries up to 5x with 5s backoff."
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter users by email domain: only .net and .org\nconst items = $input.all().map(item => item.json);\n\nconst filtrados = items.filter(user => {\n  const email = user.email || '';\n  return email.endsWith('.net') || email.endsWith('.org');\n});\n\nreturn filtrados.map(user => ({ json: user }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2816, 352],
+      "id": "filter-domains",
+      "name": "Filtrar Domínios",
+      "notes": "Keeps only users with .net or .org emails."
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const user = $input.item.json;\n\n// One correlation id per execution: it is the n8n execution id, so any log line\n// or CRM record can be traced back to the exact execution in the n8n editor.\nconst payload = {\n  source: 'flowgate-automation',\n  correlationId: $execution.id,\n  timestamp: new Date().toISOString(),\n  user: {\n    id: user.id,\n    name: user.name,\n    email: user.email,\n    company: user.company ? user.company.name : '',\n    city: user.address ? user.address.city : ''\n  }\n};\n\nreturn { json: payload };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2992, 352],
+      "id": "transform-schema",
+      "name": "Transformar para Schema CRM",
+      "notes": "Transforms user data into the CRM schema. Attaches the execution id as correlationId for tracing."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.CRM_WEBHOOK_URL ?? 'https://jsonplaceholder.typicode.com/posts' }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 2000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [3184, 352],
+      "id": "post-user",
+      "name": "Cadastrar Usuário (POST)",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
+      "onError": "continueRegularOutput",
+      "notes": "POSTs each user to CRM. Batching (1 req/2s) prevents rate limits. Partial failures don't stop the pipeline."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"executionTime\": \"{{ new Date().toISOString() }}\",\n  \"message\": \"Workflow executado com sucesso\",\n  \"totalItemsProcessed\": {{ $input.all().length }},\n  \"correlationId\": \"{{ $execution.id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [3392, 352],
+      "id": "summary-response",
+      "name": "Retornar Sumário de Execução",
+      "notes": "Returns execution summary to the webhook caller."
+    }
+  ],
+  "connections": {
+    "Webhook (Trigger)": {
+      "main": [[{ "node": "Buscar Usuários (GET)", "type": "main", "index": 0 }]]
+    },
+    "Buscar Usuários (GET)": {
+      "main": [[{ "node": "Filtrar Domínios", "type": "main", "index": 0 }]]
+    },
+    "Filtrar Domínios": {
+      "main": [[{ "node": "Transformar para Schema CRM", "type": "main", "index": 0 }]]
+    },
+    "Transformar para Schema CRM": {
+      "main": [[{ "node": "Cadastrar Usuário (POST)", "type": "main", "index": 0 }]]
+    },
+    "Cadastrar Usuário (POST)": {
+      "main": [[{ "node": "Retornar Sumário de Execução", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "active": false
+}

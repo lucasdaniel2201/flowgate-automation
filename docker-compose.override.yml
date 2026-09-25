@@ -1,0 +1,30 @@
+# Docker Compose Override — Development
+#
+# Applied automatically by `docker compose up` (no -f flags needed).
+# Adds development-friendly settings:
+#  - Lower resource limits
+#  - Debugger port bound to localhost only
+#  - Faster restart policy
+
+services:
+  n8n:
+    environment:
+      - N8N_LOG_LEVEL=debug
+      - NODE_ENV=development
+      # O aviso "critical update available" fica aparecendo em cima do editor
+      # porque a imagem é fixa de propósito. Some no desenvolvimento; o fato de
+      # a versão estar atrás continua documentado em SECURITY.md, e o compose
+      # base mantém as notificações ligadas.
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=${N8N_VERSION_NOTIFICATIONS_ENABLED:-false}
+    restart: on-failure # restart quickly in dev, don't persist across reboots
+    ports:
+      - '${N8N_PORT:-5678}:5678'
+      - '127.0.0.1:9229:9229' # Node.js debugger, localhost only
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 128M

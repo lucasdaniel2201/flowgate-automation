@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # Imagens referenciadas no docker-compose.yml (n8nio/n8n).
+  # O ecossistema "docker" cobre Dockerfile; sem Dockerfile no repositório,
+  # o alvo é "docker-compose".
+  - package-ecosystem: docker-compose
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: America/Sao_Paulo
+    labels:
+      - docker
+
+  # Actions usadas em .github/workflows/
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: monthly
+    labels:
+      - ci-cd

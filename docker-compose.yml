@@ -1,0 +1,74 @@
+# =============================================================================
+# Flowgate Automation — Docker Compose
+# =============================================================================
+# Infrastructure for n8n:
+#  - Fixed image version (no :latest)
+#  - Healthcheck with retry logic
+#  - Resource limits (CPU + memory)
+#  - Log rotation (prevents disk exhaustion)
+#  - Persistent named volume
+#  - Isolated bridge network
+# =============================================================================
+
+services:
+  n8n:
+    image: n8nio/n8n:1.94.1
+    container_name: flowgate-n8n
+    restart: unless-stopped
+    ports:
+      - '${N8N_PORT:-5678}:5678'
+    environment:
+      # Networking
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=${N8N_PORT:-5678}
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - WEBHOOK_URL=${WEBHOOK_URL:-http://localhost:5678/}
+      # Execution
+      - N8N_RUNNERS_ENABLED=${N8N_RUNNERS_ENABLED:-true}
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=${N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS:-true}
+      - EXECUTIONS_DATA_PRUNE=${EXECUTIONS_DATA_PRUNE:-true}
+      - EXECUTIONS_DATA_MAX_AGE=${EXECUTIONS_DATA_MAX_AGE:-168}
+      # Observability
+      - N8N_METRICS=${N8N_METRICS:-true}
+      - N8N_METRICS_INCLUDE_DEFAULT_METRICS=${N8N_METRICS_INCLUDE_DEFAULT_METRICS:-true}
+      - N8N_LOG_LEVEL=${N8N_LOG_LEVEL:-info}
+      # Pipeline endpoints
+      - USERS_API_URL=${USERS_API_URL:-https://jsonplaceholder.typicode.com/users}
+      - CRM_WEBHOOK_URL=${CRM_WEBHOOK_URL:-https://jsonplaceholder.typicode.com/posts}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - n8n_network
+    healthcheck:
+      # 127.0.0.1, not localhost: inside the container localhost resolves to
+      # [::1] first and n8n listens on IPv4 only, which made the container
+      # permanently unhealthy.
+      test:
+        ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://127.0.0.1:5678/healthz']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+volumes:
+  n8n_data:
+    name: flowgate_n8n_data
+    driver: local
+
+networks:
+  n8n_network:
+    name: flowgate_network
+    driver: bridge

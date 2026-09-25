@@ -1,0 +1,12 @@
+# Ambiente (o .env real nunca é versionado; o template é)
+.env
+.env.*
+!.env.example
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
