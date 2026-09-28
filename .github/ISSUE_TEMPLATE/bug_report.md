@@ -24,7 +24,7 @@ Uma descrição clara do que você esperava que acontecesse.
 - SO: [ex: Windows 11, macOS 14, Ubuntu 24.04]
 - Versão do Node: [ex: 20.11.0]
 - Versão do Docker: [ex: 26.0.0]
-- Versão do n8n: [ex: 1.94.1]
+- Versão do n8n: [ex: 1.123.82]
 
 **Logs/Saída**
 

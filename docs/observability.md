@@ -1,6 +1,10 @@
 # Observabilidade
 
-O que o n8n 1.94.1 realmente expõe, e o que ele **não** expõe.
+O que o n8n Community realmente expõe, e o que ele **não** expõe.
+
+O levantamento abaixo foi feito na 1.94.1. A imagem do repositório avançou para a
+1.123.82, então confirme no seu `/metrics` depois de um upgrade: a lista de
+métricas pode mudar entre versões do n8n.
 
 ## Métricas (Prometheus)
 

@@ -1,7 +1,7 @@
 # Flowgate Automation
 
 Pipeline ETL conteinerizado que sincroniza usuários de uma API externa para um
-webhook de destino. Orquestrado pelo n8n 1.94.1 em Docker Compose, com batching,
+webhook de destino. Orquestrado pelo n8n 1.123.82 em Docker Compose, com batching,
 retry e tolerância a falhas parciais.
 
 [![CI](https://github.com/lucasdaniel2201/flowgate-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/lucasdaniel2201/flowgate-automation/actions/workflows/ci.yml)
@@ -105,7 +105,7 @@ idempotente, então rodar dez vezes deixa um workflow só.
 
 > **Ao subir a `typeVersion` de um nó, confira se a imagem fixa suporta.** O
 > `tests/workflow.test.mjs` guarda a versão máxima de cada tipo e falha se você
-> passar do que o n8n 1.94.1 tem. Declarar uma versão inexistente faz a ativação
+> passar do que o n8n 1.123.82 tem. Declarar uma versão inexistente faz a ativação
 > falhar com um erro obscuro (`Cannot read properties of undefined (reading
 > 'execute')`) — foi exatamente o que aconteceu aqui.
 

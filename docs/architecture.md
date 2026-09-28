@@ -1,13 +1,13 @@
 # Arquitetura
 
-> Última atualização: 2026-09-25
+> Última atualização: 2026-09-28
 
 ## Visão geral (C4 — nível 1, contexto)
 
 ```mermaid
 graph TB
     Client[Cliente ou cron job] -->|POST /webhook/iniciar| Flowgate
-    Flowgate[n8n 1.94.1: Flowgate Pipeline] -->|GET /users| ExtAPI[API externa de usuários]
+    Flowgate[n8n 1.123.82: Flowgate Pipeline] -->|GET /users| ExtAPI[API externa de usuários]
     Flowgate -->|POST, 1 por usuário| CRM[Webhook de destino / CRM]
     Flowgate -.- Metrics[GET /metrics]
     Flowgate -.- Logs[Logs JSON em stdout]
@@ -119,7 +119,7 @@ flowgate-automation/
 
 | Camada | Tecnologia | Versão |
 | ------ | ---------- | ------ |
-| Orquestração | n8n | `1.94.1` (fixa) |
+| Orquestração | n8n | `1.123.82` (fixa) |
 | Containerização | Docker + Docker Compose | Compose v2 |
 | Scripts | Bash | — |
 | Testes | `node:test` (stdlib) | Node 22+ |

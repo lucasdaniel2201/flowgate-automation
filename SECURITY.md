@@ -21,7 +21,7 @@ confirmação em até 48 horas e um retorno sobre a correção em até 5 dias ú
 
 - **Secrets no `.env`, fora do git.** O `.gitignore` exclui `.env` e `.env.*`;
   só o `.env.example` é versionado, e ele não contém credencial nenhuma.
-- **Versão de imagem fixa.** `n8nio/n8n:1.94.1`, nunca `:latest` — uma
+- **Versão de imagem fixa.** `n8nio/n8n:1.123.82`, nunca `:latest` — uma
   atualização silenciosa quebra o pipeline sem aviso.
 - **Rede isolada.** O n8n fica na bridge `flowgate_network`, não na rede padrão.
 - **Limites de recurso.** CPU e memória limitados, então um workflow em loop não
@@ -36,7 +36,7 @@ Isto é importante o suficiente para ficar explícito, porque a configuração
 padrão é de desenvolvimento:
 
 - **Não há autenticação própria nem TLS.** O `N8N_BASIC_AUTH_*` foi removido do
-  n8n muito antes da 1.0 e **não tem efeito nenhum** na 1.94.1 — a instância
+  n8n muito antes da 1.0 e **não tem efeito nenhum** na 1.123.82 — a instância
   responde `200` sem credencial alguma. O controle de acesso é o *user
   management* do próprio n8n: na primeira visita ao editor ele pede para você
   criar a conta de dono da instância.
@@ -48,14 +48,13 @@ padrão é de desenvolvimento:
 - **Sem criptografia de credenciais.** O `N8N_ENCRYPTION_KEY` está comentado no
   `.env.example`: sem ele, o n8n gera uma chave própria no volume. Em produção,
   defina a chave explicitamente para poder restaurar backup em outra máquina.
-- **A imagem está fixa numa versão que o próprio n8n considera desatualizada.**
-  A `n8nio/n8n:1.94.1` é anterior à baseline de segurança atual: a instância
-  mostra o aviso *"Critical update available — please update to version 1.121.0
-  or higher"*. A versão está fixa de propósito, para o pipeline ser previsível,
-  e o `docker-compose.override.yml` silencia o aviso só no desenvolvimento. O
-  Dependabot abre PR semanal para subir a imagem; ao aceitar o bump, confira as
-  `typeVersion` dos nós, porque `tests/workflow.test.mjs` falha se elas passarem
-  do que a imagem nova suporta.
+- **A versão da imagem é fixa, e o bump passa pelo smoke test.** A
+  `n8nio/n8n:1.123.82` atende ao mínimo de segurança que o próprio n8n apontava
+  (a instância pedia 1.121.0 ou superior). A versão continua fixa de propósito,
+  para o pipeline ser previsível — nunca `:latest`. O Dependabot abre PR semanal
+  para subir a imagem; ao aceitar o bump, confira as `typeVersion` dos nós
+  (`tests/workflow.test.mjs` falha se elas passarem do que a imagem nova
+  suporta) e deixe o smoke test ponta a ponta rodar antes de mesclar.
 
 ## Divulgação responsável
 

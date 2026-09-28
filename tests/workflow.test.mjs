@@ -8,7 +8,7 @@ const workflow = JSON.parse(
 
 const nodeByName = (name) => workflow.nodes.find((node) => node.name === name);
 
-// Highest typeVersion available in the pinned image (n8n 1.94.1). Declaring a
+// Highest typeVersion available in the pinned image (n8n 1.123.82). Declaring a
 // version the image does not ship makes n8n fail to activate the workflow with
 // "Cannot read properties of undefined (reading 'execute')".
 const MAX_TYPE_VERSION = {

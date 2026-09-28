@@ -7,6 +7,15 @@ e este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
+### Alterado
+
+- Atualiza a imagem do n8n de 1.94.1 para 1.123.82, que está dentro da baseline de
+  segurança que o próprio n8n aponta como mínima. O bump passou pelos 23 testes
+  estáticos e pelo smoke test ponta a ponta no CI.
+- Alinha à nova versão a documentação que citava a 1.94.1: README, SECURITY.md,
+  `docs/architecture.md`, `docs/observability.md`, `docs/roadmap.md`, o template
+  de issue e o comentário do `tests/workflow.test.mjs`.
+
 ## [1.0.0] - 2026-09-25
 
 ### Adicionado

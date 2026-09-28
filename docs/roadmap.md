@@ -1,6 +1,6 @@
 # Roadmap
 
-> Última atualização: 2026-09-25
+> Última atualização: 2026-09-28
 
 ## Pronto
 
@@ -12,11 +12,12 @@
 - [x] Smoke test ponta a ponta e CI rodando os dois
 - [x] ADRs das decisões estruturais
 - [x] Dependabot para Docker e GitHub Actions
+- [x] Imagem do n8n atualizada para a 1.123.82, dentro da baseline de segurança
+      que o próprio n8n aponta (o bump passou pelos testes estáticos e pelo
+      smoke test ponta a ponta)
 
 ## Planejado
 
-- [ ] Subir a imagem do n8n para uma versão dentro da baseline de segurança
-      atual (a `1.94.1` está abaixo do que o próprio n8n recomenda hoje)
 - [ ] Autenticação no webhook — hoje `POST /webhook/iniciar` é aberto para quem alcança a porta
 - [ ] Sink HTTP local para o smoke test não depender de rede externa
 - [ ] Dashboard Grafana em JSON, usando as métricas que o n8n de fato expõe
