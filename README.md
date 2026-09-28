@@ -266,7 +266,7 @@ MIT — veja [LICENSE](LICENSE).
 
 ## Autor
 
-**Lucas Daniel** — SRE / Platform Engineer
+**Lucas Daniel Santos** — Analista de Implantação | Infraestrutura e Automação
 
 - GitHub: [@lucasdaniel2201](https://github.com/lucasdaniel2201)
 - LinkedIn: [lucas-santos](https://www.linkedin.com/in/lucas-santos-a620011b9)
