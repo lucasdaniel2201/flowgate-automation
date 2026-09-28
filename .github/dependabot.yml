@@ -12,6 +12,15 @@ updates:
       timezone: America/Sao_Paulo
     labels:
       - docker
+    ignore:
+      # A imagem do n8n e fixada de proposito. A passagem de 1.x para 2.x muda
+      # a versao do node e a typeVersion que os nos suportam, o que exige
+      # revalidar o workflow inteiro e o tests/workflow.test.mjs (que guarda a
+      # versao maxima aceita pela imagem). A subida sera feita de forma
+      # deliberada, com o smoke test ponta a ponta rodando. Atualizacoes de
+      # minor e patch dentro da 1.x continuam sendo propostas.
+      - dependency-name: "n8nio/n8n"
+        update-types: ["version-update:semver-major"]
 
   # Actions usadas em .github/workflows/
   - package-ecosystem: github-actions
